@@ -1,7 +1,8 @@
 import { useIntervalFn } from "@vueuse/core";
 import humanize from "humanize-duration";
 
-import { checkStatus, isLoggedIn, setLoggedIn } from "./api";
+import { checkStatus, isLoggedIn, setLoggedIn, login } from "./api";
+import { state } from "./state";
 import type { ApiResponse, SrunLoginState } from "./types";
 
 export const humanizeDuration = (ms: number) =>
@@ -42,14 +43,47 @@ export async function useCheckStatus(
 		status: ApiResponse<SrunLoginState, string>,
 	) => Promise<void>,
 ) {
-	const firstCall = true;
-	const prev = await isLoggedIn();
+	let firstCall = true;
+	let prev = await isLoggedIn();
+	let reconnecting = false;
 
 	async function trigger() {
 		const response = await checkStatus();
 		const loggedIn = await isLoggedIn();
 
+		// 自动重连逻辑
+		if (
+			!loggedIn &&
+			state.credentials.autoReconnect &&
+			state.credentials.rememberMe &&
+			!state.manualLogout &&
+			state.credentials.username &&
+			state.credentials.password &&
+			!reconnecting
+		) {
+			reconnecting = true;
+			try {
+				// 尝试重新登录
+				await login(state.credentials);
+				// 登录后再次检查状态
+				const newResponse = await checkStatus();
+				const newLoggedIn = await isLoggedIn();
+				if (newLoggedIn) {
+					// 重连成功，更新状态
+					await setLoggedIn(newLoggedIn);
+					await cb(newLoggedIn, newResponse);
+				}
+			} catch (error) {
+				// 重连失败，静默处理
+				console.error('自动重连失败:', error);
+			} finally {
+				reconnecting = false;
+			}
+		}
+
 		if (prev !== loggedIn || firstCall) {
+			prev = loggedIn;
+			firstCall = false;
 			await setLoggedIn(loggedIn);
 			await cb(loggedIn, response);
 		}

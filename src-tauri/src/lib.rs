@@ -5,6 +5,7 @@ use tauri::async_runtime::Mutex;
 use tauri::menu::{CheckMenuItemBuilder, Menu, MenuBuilder, MenuItem, SubmenuBuilder};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::{App, AppHandle, Manager, State, WindowEvent};
+use tauri_plugin_store::StoreExt;
 
 use crate::api::ApiResponse;
 use crate::auto_start::AutoStartManager;
@@ -113,13 +114,22 @@ fn setup_menu(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
         .checked(autostart_manager.is_enabled_in_config())
         .build(app)?;
 
+    // 获取自动重连设置
+    let settings = app.store("credentials")?;
+    let auto_reconnect = settings
+        .get("autoReconnect")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+
+    let item_auto_reconnect = CheckMenuItemBuilder::new("自动重新登录")
+        .id("auto_reconnect")
+        .checked(auto_reconnect)
+        .build(app)?;
+
     let menu_settings = SubmenuBuilder::new(app, "设置")
         .item(&item_auto_start)
+        .item(&item_auto_reconnect)
         .build()?;
-
-    // let menu_dev =MenuItem::new(app, "设置")
-    //     .item(&item_auto_start)
-    //     .build()?;
 
     let menu = MenuBuilder::new(app)
         .items(&[&menu_settings])
@@ -136,12 +146,19 @@ fn setup_menu(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
                     .set_enabled(item_auto_start.is_checked().unwrap())
                     .unwrap();
             }
-
+            "auto_reconnect" => {
+                let checked = item_auto_reconnect.is_checked().unwrap();
+                if let Ok(settings) = app_handle.store("credentials") {
+                    let _ = settings.set("autoReconnect", checked);
+                    let _ = settings.save();
+                } else {
+                    warn!("Failed to get store for credentials");
+                }
+            }
             "devtools" => {
                 let window = app_handle.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
-
             _ => {
                 println!("unexpected menu event");
             }

@@ -20,14 +20,28 @@ const triggerCheckStatus = await useCheckStatus(async (loggedIn) => {
 watch(
 	() => state.credentials.rememberMe,
 	(newVal) => {
-		if (newVal === false && state.credentials.autoLogin === true) {
-			state.credentials.autoLogin = false;
+		if (newVal === false) {
+			if (state.credentials.autoLogin === true) {
+				state.credentials.autoLogin = false;
+			}
+			if (state.credentials.autoReconnect === true) {
+				state.credentials.autoReconnect = false;
+			}
 		}
 	},
 );
 
 watch(
 	() => state.credentials.autoLogin,
+	(newVal) => {
+		if (newVal === true && state.credentials.rememberMe === false) {
+			state.credentials.rememberMe = true;
+		}
+	},
+);
+
+watch(
+	() => state.credentials.autoReconnect,
 	(newVal) => {
 		if (newVal === true && state.credentials.rememberMe === false) {
 			state.credentials.rememberMe = true;
@@ -87,7 +101,7 @@ async function handleLogin() {
 					/>
 				</div>
 
-				<fieldset class="grid grid-cols-2">
+				<fieldset class="grid grid-cols-3">
 					<label class="label">
 						<input
 							v-model="state.credentials.rememberMe"
@@ -103,6 +117,15 @@ async function handleLogin() {
 							type="checkbox"
 						/>
 						自动登录
+					</label>
+					<label class="label">
+						<input
+							v-model="state.credentials.autoReconnect"
+							class="checkbox"
+							type="checkbox"
+							:disabled="!state.credentials.rememberMe"
+						/>
+						自动重连
 					</label>
 				</fieldset>
 

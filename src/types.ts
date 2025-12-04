@@ -46,4 +46,5 @@ export interface Credentials {
 	password: string;
 	rememberMe: boolean;
 	autoLogin: boolean;
+	autoReconnect: boolean;
 }
