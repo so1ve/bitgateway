@@ -118,15 +118,6 @@ async function handleLogin() {
 						/>
 						自动登录
 					</label>
-					<label class="label">
-						<input
-							v-model="state.credentials.autoReconnect"
-							class="checkbox"
-							type="checkbox"
-							:disabled="!state.credentials.rememberMe"
-						/>
-						自动重连
-					</label>
 				</fieldset>
 
 				<button
