@@ -69,8 +69,9 @@ export async function useCheckStatus(
 				const newResponse = await checkStatus();
 				const newLoggedIn = await isLoggedIn();
 				if (newLoggedIn) {
-					// 重连成功，更新状态
 					await setLoggedIn(newLoggedIn);
+					prev = newLoggedIn;
+					firstCall = false;
 					await cb(newLoggedIn, newResponse);
 				}
 			} catch (error) {

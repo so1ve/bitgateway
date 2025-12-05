@@ -101,7 +101,7 @@ async function handleLogin() {
 					/>
 				</div>
 
-				<fieldset class="grid grid-cols-3">
+				<fieldset class="grid grid-cols-2">
 					<label class="label">
 						<input
 							v-model="state.credentials.rememberMe"

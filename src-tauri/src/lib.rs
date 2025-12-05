@@ -114,10 +114,10 @@ fn setup_menu(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
         .checked(autostart_manager.is_enabled_in_config())
         .build(app)?;
 
-    // 获取自动重连设置
-    let settings = app.store("credentials")?;
-    let auto_reconnect = settings
-        .get("autoReconnect")
+    let auto_reconnect = app
+        .store("credentials")
+        .ok()
+        .and_then(|s| s.get("autoReconnect"))
         .and_then(|v| v.as_bool())
         .unwrap_or(false);
 
