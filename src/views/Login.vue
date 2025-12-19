@@ -10,6 +10,15 @@ import { useCheckStatus } from "../utils";
 
 const router = useRouter();
 const loading = ref(true);
+const retryCount = ref(0);
+const isRetrying = ref(false);
+
+// 重试机制配置
+const RETRY_CONFIG = {
+	maxRetries: 10,
+	retryInterval: 5000,
+	timeout: 50_000,
+};
 
 const triggerCheckStatus = await useCheckStatus(async (loggedIn) => {
 	if (loggedIn) {
@@ -35,27 +44,110 @@ watch(
 	},
 );
 
-if (state.credentials.autoLogin && (state.firstOpen || !state.manualLogout)) {
+async function autoLoginWithRetry() {
 	state.firstOpen = false;
 
-	await login(state.credentials);
-	await triggerCheckStatus();
+	async function attemptLogin(): Promise<boolean> {
+		try {
+			const loginPromise = login(state.credentials);
+			const timeoutPromise = new Promise<never>((_resolve, reject) => {
+				setTimeout(() => reject(new Error("登录超时")), RETRY_CONFIG.timeout);
+			});
+
+			const response = await Promise.race([loginPromise, timeoutPromise]);
+
+			if (response.success) {
+				await triggerCheckStatus();
+
+				return true;
+			} else {
+				console.error(
+					`登录尝试失败 (第${retryCount.value + 1}次):`,
+					response.error,
+				);
+
+				return false;
+			}
+		} catch (error) {
+			console.error(`登录尝试失败 (第${retryCount.value + 1}次):`, error);
+
+			return false;
+		}
+	}
+
+	const loginSuccess = await attemptLogin();
+
+	if (loginSuccess) {
+		loading.value = false;
+
+		return;
+	}
+
+	isRetrying.value = true;
+
+	for (let i = 0; i < RETRY_CONFIG.maxRetries; i++) {
+		retryCount.value = i + 1;
+		toast.info(
+			`登录失败，正在重试 (${retryCount.value}/${RETRY_CONFIG.maxRetries})...`,
+		);
+
+		// 等待重试间隔
+		await new Promise((resolve) =>
+			setTimeout(resolve, RETRY_CONFIG.retryInterval),
+		);
+
+		const success = await attemptLogin();
+		if (success) {
+			isRetrying.value = false;
+			loading.value = false;
+
+			return;
+		}
+	}
+
+	isRetrying.value = false;
+	loading.value = false;
+	toast.error(`自动登录失败，已重试${RETRY_CONFIG.maxRetries}次，请手动登录`);
+}
+
+if (state.credentials.autoLogin && (state.firstOpen || !state.manualLogout)) {
+	await autoLoginWithRetry();
 } else {
 	loading.value = false;
 }
 
 async function handleLogin() {
 	loading.value = true;
+	retryCount.value = 0;
+	isRetrying.value = false;
+
 	if (state.credentials.rememberMe) {
 		await setCredentials(state.credentials);
 	}
-	const response = await login(state.credentials);
-	if (response.success) {
-		await triggerCheckStatus();
-		toast.success("登录成功！");
-	} else {
+
+	try {
+		const loginPromise = login(state.credentials);
+		const timeoutPromise = new Promise<never>((_resolve, reject) => {
+			setTimeout(() => reject(new Error("登录超时")), RETRY_CONFIG.timeout);
+		});
+
+		const response = (await Promise.race([
+			loginPromise,
+			timeoutPromise,
+		])) as any;
+
+		if (response.success) {
+			await triggerCheckStatus();
+			toast.success("登录成功！");
+		} else {
+			loading.value = false;
+			toast.error(`登录失败：${response.error}`);
+		}
+	} catch (error) {
 		loading.value = false;
-		toast.error(`登录失败：${response.error}`);
+		toast.error(
+			`登录失败：${error instanceof Error ? error.message : "未知错误"}`,
+		);
 	}
 }
 </script>
@@ -116,7 +208,10 @@ async function handleLogin() {
 					type="submit"
 				>
 					<span v-if="loading" class="loading loading-spinner" />
-					登录
+					<span v-if="isRetrying">
+						重试中 ({{ retryCount }}/{{ RETRY_CONFIG.maxRetries }})
+					</span>
+					<span v-else>登录</span>
 				</button>
 			</form>
 		</div>
