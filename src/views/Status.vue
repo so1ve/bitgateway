@@ -33,7 +33,7 @@ async function handleLogout() {
 		toast.error(`注销失败：${response.error}`);
 	}
 
-	triggerCheckStatus();
+	await triggerCheckStatus();
 }
 </script>
 
