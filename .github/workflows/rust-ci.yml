@@ -5,12 +5,12 @@ on:
     branches: [main]
     paths:
       - "src-tauri/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/rust-ci.yml"
   pull_request:
     branches: [main]
     paths:
       - "src-tauri/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/rust-ci.yml"
 
 jobs:
   rust:
@@ -50,29 +50,3 @@ jobs:
 
       - name: Run cargo fmt
         run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
-
-  node:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PNPM
-        run: corepack enable
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-          cache: pnpm
-
-      - name: Setup
-        run: npm i -g @antfu/ni
-
-      - name: Install
-        run: nci
-
-      - name: TypeCheck
-        run: nr typecheck
-
-      - name: Lint
-        run: nr lint
