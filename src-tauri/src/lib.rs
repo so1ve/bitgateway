@@ -64,7 +64,7 @@ async fn logout(
     match client.logout(false, username).await {
         Ok(response) => {
             debug!("{:?}", response);
-            if let Some(msg)= response.suc_msg {
+            if let Some(msg) = response.suc_msg {
                 Ok(ApiResponse::success(msg))
             } else if response.error == "ok" {
                 Ok(ApiResponse::success(response.error))
