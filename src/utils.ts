@@ -42,8 +42,8 @@ export async function useCheckStatus(
 		status: ApiResponse<SrunLoginState, string>,
 	) => Promise<void>,
 ) {
-	const firstCall = true;
-	const prev = await isLoggedIn();
+	let firstCall = true;
+	let prev = await isLoggedIn();
 
 	async function trigger() {
 		const response = await checkStatus();
@@ -52,6 +52,8 @@ export async function useCheckStatus(
 		if (prev !== loggedIn || firstCall) {
 			await setLoggedIn(loggedIn);
 			await cb(loggedIn, response);
+			prev = loggedIn;
+			firstCall = false;
 		}
 	}
 
