@@ -38,7 +38,9 @@ async fn login(
     state: State<'_, BitsguiState>,
 ) -> Result<ApiResponse<String, String>, ()> {
     let guard = state.client.lock().await;
-    let client = guard.as_ref().unwrap();
+    let Some(client) = guard.as_ref() else {
+        return Ok(ApiResponse::error("Client not initialized".into()));
+    };
     match client.login(false, username, password).await {
         Ok(response) => {
             debug!("{:?}", response);
@@ -60,7 +62,9 @@ async fn logout(
     state: State<'_, BitsguiState>,
 ) -> Result<ApiResponse<String, String>, ()> {
     let guard = state.client.lock().await;
-    let client = guard.as_ref().unwrap();
+    let Some(client) = guard.as_ref() else {
+        return Ok(ApiResponse::error("Client not initialized".into()));
+    };
     match client.logout(false, username).await {
         Ok(response) => {
             debug!("{:?}", response);
