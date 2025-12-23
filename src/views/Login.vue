@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 
-import { login, setCredentials } from "../api";
+import { isLoggedIn, login, setCredentials } from "../api";
 import AppFooter from "../components/AppFooter.vue";
 import { state } from "../state";
 import { useCheckStatus } from "../utils";
@@ -12,6 +12,11 @@ const router = useRouter();
 const loading = ref(true);
 const retryCount = ref(0);
 const isRetrying = ref(false);
+const isMounted = ref(true);
+
+onUnmounted(() => {
+	isMounted.value = false;
+});
 
 // 重试机制配置
 const RETRY_CONFIG = {
@@ -48,6 +53,9 @@ async function autoLoginWithRetry() {
 	state.firstOpen = false;
 
 	async function attemptLogin(): Promise<boolean> {
+		if (!isMounted.value) {
+			return false;
+		}
 		try {
 			const loginPromise = login(state.credentials);
 			const timeoutPromise = new Promise<never>((_resolve, reject) => {
@@ -86,6 +94,9 @@ async function autoLoginWithRetry() {
 	isRetrying.value = true;
 
 	for (let i = 0; i < RETRY_CONFIG.maxRetries; i++) {
+		if (!isMounted.value) {
+			return;
+		}
 		retryCount.value = i + 1;
 		toast.info(
 			`登录失败，正在重试 (${retryCount.value}/${RETRY_CONFIG.maxRetries})...`,
@@ -95,6 +106,10 @@ async function autoLoginWithRetry() {
 		await new Promise((resolve) =>
 			setTimeout(resolve, RETRY_CONFIG.retryInterval),
 		);
+
+		if (!isMounted.value) {
+			return;
+		}
 
 		const success = await attemptLogin();
 		if (success) {
@@ -110,7 +125,13 @@ async function autoLoginWithRetry() {
 	toast.error(`自动登录失败，已重试${RETRY_CONFIG.maxRetries}次，请手动登录`);
 }
 
-if (state.credentials.autoLogin && (state.firstOpen || !state.manualLogout)) {
+if (await isLoggedIn()) {
+	loading.value = false;
+	router.push("/status");
+} else if (
+	state.credentials.autoLogin &&
+	(state.firstOpen || !state.manualLogout)
+) {
 	await autoLoginWithRetry();
 } else {
 	loading.value = false;
