@@ -1,11 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useThrottleFn } from "@vueuse/core";
 
+import { DEFAULT_INTERVAL } from "../constants";
 import type { ApiResponse, Credentials, SrunLoginState } from "../types";
 
 export const checkStatus = useThrottleFn(
 	async () => await invoke<ApiResponse<SrunLoginState, string>>("check_status"),
-	1000,
+	DEFAULT_INTERVAL,
 );
 
 export async function isLoggedIn() {
@@ -16,7 +17,7 @@ export async function isLoggedIn() {
 
 export const setLoggedIn = useThrottleFn(
 	async (loggedIn: boolean) => await invoke("set_logged_in", { loggedIn }),
-	1000,
+	DEFAULT_INTERVAL,
 );
 
 export const login = async (credentials: Credentials) =>
@@ -26,6 +27,3 @@ export const logout = async (username: string) =>
 	await invoke<ApiResponse<string, string>>("logout", {
 		username,
 	});
-
-export { initBitsrun } from "./init";
-export { getCredentials, initStore, setCredentials } from "./store";

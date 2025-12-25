@@ -1,35 +1,9 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { toast } from "vue-sonner";
+import { watch } from "vue";
 
-import { isLoggedIn, login, setCredentials } from "../api";
 import AppFooter from "../components/AppFooter.vue";
+import { authManager } from "../logic/auth";
 import { state } from "../state";
-import { useCheckStatus } from "../utils";
-
-const router = useRouter();
-const loading = ref(true);
-const retryCount = ref(0);
-const isRetrying = ref(false);
-const isMounted = ref(true);
-
-onUnmounted(() => {
-	isMounted.value = false;
-});
-
-// 重试机制配置
-const RETRY_CONFIG = {
-	maxRetries: 10,
-	retryInterval: 5000,
-	timeout: 50_000,
-};
-
-const triggerCheckStatus = await useCheckStatus(async (loggedIn) => {
-	if (loggedIn) {
-		router.push("/status");
-	}
-});
 
 watch(
 	() => state.credentials.rememberMe,
@@ -49,127 +23,8 @@ watch(
 	},
 );
 
-async function autoLoginWithRetry() {
-	state.firstOpen = false;
-
-	async function attemptLogin(): Promise<boolean> {
-		if (!isMounted.value) {
-			return false;
-		}
-		try {
-			const loginPromise = login(state.credentials);
-			const timeoutPromise = new Promise<never>((_resolve, reject) => {
-				setTimeout(() => reject(new Error("登录超时")), RETRY_CONFIG.timeout);
-			});
-
-			const response = await Promise.race([loginPromise, timeoutPromise]);
-
-			if (response.success) {
-				await triggerCheckStatus();
-
-				return true;
-			} else {
-				console.error(
-					`登录尝试失败 (第${retryCount.value + 1}次):`,
-					response.error,
-				);
-
-				return false;
-			}
-		} catch (error) {
-			console.error(`登录尝试失败 (第${retryCount.value + 1}次):`, error);
-
-			return false;
-		}
-	}
-
-	const loginSuccess = await attemptLogin();
-
-	if (loginSuccess) {
-		loading.value = false;
-
-		return;
-	}
-
-	isRetrying.value = true;
-
-	for (let i = 0; i < RETRY_CONFIG.maxRetries; i++) {
-		if (!isMounted.value) {
-			return;
-		}
-		retryCount.value = i + 1;
-		toast.info(
-			`登录失败，正在重试 (${retryCount.value}/${RETRY_CONFIG.maxRetries})...`,
-		);
-
-		// 等待重试间隔
-		await new Promise((resolve) =>
-			setTimeout(resolve, RETRY_CONFIG.retryInterval),
-		);
-
-		if (!isMounted.value) {
-			return;
-		}
-
-		const success = await attemptLogin();
-		if (success) {
-			isRetrying.value = false;
-			loading.value = false;
-
-			return;
-		}
-	}
-
-	isRetrying.value = false;
-	loading.value = false;
-	toast.error(`自动登录失败，已重试${RETRY_CONFIG.maxRetries}次，请手动登录`);
-}
-
-if (await isLoggedIn()) {
-	loading.value = false;
-	router.push("/status");
-} else if (
-	state.credentials.autoLogin &&
-	(state.firstOpen || !state.manualLogout)
-) {
-	await autoLoginWithRetry();
-} else {
-	loading.value = false;
-}
-
 async function handleLogin() {
-	loading.value = true;
-	retryCount.value = 0;
-	isRetrying.value = false;
-
-	if (state.credentials.rememberMe) {
-		await setCredentials(state.credentials);
-	}
-
-	try {
-		const loginPromise = login(state.credentials);
-		const timeoutPromise = new Promise<never>((_resolve, reject) => {
-			setTimeout(() => reject(new Error("登录超时")), RETRY_CONFIG.timeout);
-		});
-
-		const response = (await Promise.race([
-			loginPromise,
-			timeoutPromise,
-		])) as any;
-
-		if (response.success) {
-			await triggerCheckStatus();
-			toast.success("登录成功！");
-		} else {
-			loading.value = false;
-			toast.error(`登录失败：${response.error}`);
-		}
-	} catch (error) {
-		loading.value = false;
-		toast.error(
-			`登录失败：${error instanceof Error ? error.message : "未知错误"}`,
-		);
-	}
+	await authManager.login(false);
 }
 </script>
 
@@ -185,6 +40,7 @@ async function handleLogin() {
 					<input
 						v-model="state.credentials.username"
 						class="input input-bordered w-full"
+						:disabled="state.loggingIn"
 						type="text"
 					/>
 				</div>
@@ -196,42 +52,49 @@ async function handleLogin() {
 					<input
 						v-model="state.credentials.password"
 						class="input input-bordered w-full"
+						:disabled="state.loggingIn"
 						type="password"
 					/>
 				</div>
 
 				<fieldset class="grid grid-cols-2">
-					<label class="label">
+					<label class="label cursor-pointer">
 						<input
 							v-model="state.credentials.rememberMe"
 							class="checkbox"
+							:disabled="state.loggingIn"
 							type="checkbox"
 						/>
-						记住我
+						<span class="label-text ml-2">记住我</span>
 					</label>
-					<label class="label">
+					<label class="label cursor-pointer">
 						<input
 							v-model="state.credentials.autoLogin"
 							class="checkbox"
+							:disabled="state.loggingIn"
 							type="checkbox"
 						/>
-						自动登录
+						<span class="label-text ml-2">自动登录</span>
 					</label>
 				</fieldset>
+
+				<div
+					v-if="state.statusMessage"
+					class="text-sm text-center text-gray-500 mb-2"
+				>
+					{{ state.statusMessage }}
+				</div>
 
 				<button
 					class="btn w-full"
 					:class="{
-						'btn-accent': !loading,
-						'btn-disabled': loading,
+						'btn-accent': !state.loggingIn,
+						'btn-disabled': state.loggingIn,
 					}"
-					:disabled="loading"
+					:disabled="state.loggingIn"
 					type="submit"
 				>
-					<span v-if="loading" class="loading loading-spinner" />
-					<span v-if="isRetrying">
-						重试中 ({{ retryCount }}/{{ RETRY_CONFIG.maxRetries }})
-					</span>
+					<span v-if="state.loggingIn" class="loading loading-spinner" />
 					<span v-else>登录</span>
 				</button>
 			</form>

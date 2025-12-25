@@ -2,7 +2,8 @@ import { attachConsole } from "@tauri-apps/plugin-log";
 import { createApp } from "vue";
 
 import App from "./App.vue";
-import { initBitsrun, initStore } from "./api";
+import { initBitsrun } from "./api/bitsrun";
+import { initStore } from "./api/store";
 import { router } from "./router";
 
 import "./style.css";

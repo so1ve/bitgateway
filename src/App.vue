@@ -1,10 +1,22 @@
 <script setup lang="ts">
+import { watch } from "vue";
 import { Toaster } from "vue-sonner";
 
 import OverlayScrollbars from "./components/OverlayScrollbars.vue";
+import { authManager } from "./logic/auth";
 import { state } from "./state";
 
 import "vue-sonner/style.css";
+
+watch(
+	() => state.initialized,
+	(val) => {
+		if (val) {
+			void authManager.start();
+		}
+	},
+	{ immediate: true },
+);
 </script>
 
 <template>
