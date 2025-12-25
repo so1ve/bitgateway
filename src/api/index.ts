@@ -20,10 +20,7 @@ export const setLoggedIn = useThrottleFn(
 );
 
 export const login = async (credentials: Credentials) =>
-	await invoke<ApiResponse<SrunLoginState, string>>(
-		"login",
-		credentials as any,
-	);
+	await invoke<ApiResponse<string, string>>("login", credentials as any);
 
 export const logout = async (username: string) =>
 	await invoke<ApiResponse<string, string>>("logout", {
