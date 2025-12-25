@@ -15,4 +15,5 @@ export const state = reactive({
 	loggingIn: false,
 	userInfo: null as SrunLoginState | null,
 	statusMessage: "初始化中...",
+	retryCount: 0,
 });

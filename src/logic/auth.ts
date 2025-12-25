@@ -22,6 +22,7 @@ class AuthManager {
 					state.loggedIn = true;
 					state.userInfo = status.data;
 					state.statusMessage = "已连接";
+					state.retryCount = 0;
 
 					if (router.currentRoute.value.path === "/") {
 						router.push("/status");
@@ -63,18 +64,28 @@ class AuthManager {
 			return;
 		}
 		state.loggingIn = true;
-		state.statusMessage = isAuto ? "自动登录中..." : "登录中...";
+		state.statusMessage = isAuto
+			? `自动登录中...${state.retryCount > 0 ? ` (重试 ${state.retryCount})` : ""}`
+			: "登录中...";
 
 		try {
 			if (state.credentials.rememberMe) {
 				await setCredentials(state.credentials);
 			}
 
-			const response = await apiLogin(state.credentials);
+			// Add timeout
+			const loginPromise = apiLogin(state.credentials);
+			const timeoutPromise = new Promise<never>((resolve, reject) =>
+				setTimeout(() => reject(new Error("登录超时")), 10_000),
+			);
+
+			const response = await Promise.race([loginPromise, timeoutPromise]);
+
 			if (response.success) {
 				state.manualLogout = false;
 				state.loggedIn = true;
 				state.firstOpen = false;
+				state.retryCount = 0;
 				if (!isAuto) {
 					toast.success("登录成功");
 				}
@@ -85,6 +96,7 @@ class AuthManager {
 			} else {
 				state.statusMessage = `登录失败: ${response.error}`;
 				if (isAuto) {
+					state.retryCount++;
 					console.error("Auto login failed:", response.error);
 				} else {
 					toast.error(`登录失败: ${response.error}`);
@@ -93,7 +105,9 @@ class AuthManager {
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : String(e);
 			state.statusMessage = `登录出错: ${msg}`;
-			if (!isAuto) {
+			if (isAuto) {
+				state.retryCount++;
+			} else {
 				toast.error(`登录出错: ${msg}`);
 			}
 		} finally {

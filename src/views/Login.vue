@@ -95,6 +95,10 @@ async function handleLogin() {
 					type="submit"
 				>
 					<span v-if="state.loggingIn" class="loading loading-spinner" />
+					<span v-if="state.loggingIn && state.retryCount > 0">
+						重试中 ({{ state.retryCount }})
+					</span>
+					<span v-else-if="state.loggingIn">登录中...</span>
 					<span v-else>登录</span>
 				</button>
 			</form>
