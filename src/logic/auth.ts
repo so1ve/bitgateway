@@ -2,6 +2,7 @@ import { toast } from "vue-sonner";
 
 import { login as apiLogin, logout as apiLogout } from "../api/methods";
 import { setCredentials } from "../api/store";
+import { LOGIN_RETRY_TIMEOUT } from "../constants";
 import { router } from "../router";
 import { state } from "../state";
 import type { SrunLoginStateLoggedIn } from "../types";
@@ -76,7 +77,7 @@ class AuthManager {
 			// Add timeout
 			const loginPromise = apiLogin(state.credentials);
 			const timeoutPromise = new Promise<never>((resolve, reject) =>
-				setTimeout(() => reject(new Error("登录超时")), 10_000),
+				setTimeout(() => reject(new Error("登录超时")), LOGIN_RETRY_TIMEOUT),
 			);
 
 			const response = await Promise.race([loginPromise, timeoutPromise]);
