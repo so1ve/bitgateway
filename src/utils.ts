@@ -15,6 +15,7 @@ function formatNumber(num: number, count: number) {
 }
 
 // 从深澜抄过来的，，
+
 export function formatFlux(byte: number) {
 	if (byte > 1024 * 1024 * 1024 * 1024) {
 		return `${formatNumber(byte / (1024 * 1024 * 1024 * 1024), 2)}TB`;
