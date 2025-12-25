@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 import { DEFAULT_INTERVAL } from "../constants";
 import type { ApiResponse, SrunLoginState } from "../types";
+import { sleep } from "../utils";
 
 export type StatusResult =
 	| { type: "online"; data: SrunLoginState }
@@ -29,6 +30,6 @@ export async function* monitorStatus(
 			};
 		}
 
-		await new Promise((resolve) => setTimeout(resolve, intervalMs));
+		await sleep(intervalMs);
 	}
 }

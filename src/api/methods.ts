@@ -27,3 +27,6 @@ export const logout = async (username: string) =>
 	await invoke<ApiResponse<string, string>>("logout", {
 		username,
 	});
+
+export const init = async () =>
+	await invoke<ApiResponse<string, string>>("init");
