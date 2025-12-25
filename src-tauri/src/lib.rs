@@ -206,6 +206,9 @@ fn setup_tray(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn run() {
     let builder = tauri::Builder::default()
+        .manage(BitsguiState {
+            client: Mutex::new(None),
+        })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}))
         .plugin(
@@ -213,9 +216,6 @@ pub fn run() {
                 .level(tauri_plugin_log::log::LevelFilter::Info)
                 .build(),
         )
-        .manage(BitsguiState {
-            client: Mutex::new(None),
-        })
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(
