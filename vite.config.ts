@@ -5,6 +5,7 @@ import Font from "vite-plugin-font";
 import WebfontDownload from "vite-plugin-webfont-dl";
 
 const host = process.env.TAURI_DEV_HOST;
+
 // https://vite.dev/config/
 export default defineConfig(async () => ({
 	plugins: [
