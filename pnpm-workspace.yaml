@@ -1,3 +1,5 @@
+shellEmulator: true
+
 onlyBuiltDependencies:
   - cn-font-split
   - koffi

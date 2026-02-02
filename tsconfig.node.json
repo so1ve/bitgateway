@@ -7,5 +7,5 @@
 		"allowSyntheticDefaultImports": true,
 		"skipLibCheck": true
 	},
-	"include": ["vite.config.ts", "uno.config.ts", "changelogithub.config.ts"]
+	"include": ["changelogithub.config.ts", "uno.config.ts", "vite.config.ts"]
 }
