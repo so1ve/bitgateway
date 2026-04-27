@@ -1,7 +1,3 @@
-[workspace]
-release_always = true
-publish_timeout = "10m"
-
 [[package]]
 name = "bitgateway"
 semver_check = false
