@@ -1,5 +1,5 @@
 [workspace]
-release_always = false
+release_always = true
 publish_timeout = "10m"
 
 [[package]]
