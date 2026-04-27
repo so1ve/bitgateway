@@ -51,10 +51,10 @@ cd bitgateway
 cargo run -p bitgateway
 ```
 
-如果需要生成桌面安装包，安装 Dioxus CLI 后运行：
+如果需要生成桌面安装包，建议先安装 `cargo-binstall`，再用它安装 Dioxus CLI 后运行：
 
 ```sh
-cargo install dioxus-cli --version 0.7.6 --locked
+cargo binstall dioxus-cli@0.7.6 --locked # 或者用 cargo install
 cd crates/bitgateway
 dx bundle --release --platform desktop
 ```

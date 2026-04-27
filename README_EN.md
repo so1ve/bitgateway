@@ -51,10 +51,10 @@ cd bitgateway
 cargo run -p bitgateway
 ```
 
-To produce a desktop bundle, install the Dioxus CLI and run:
+To produce a desktop bundle, it's recommended install `cargo-binstall` and use it to install the Dioxus CLI, and run:
 
 ```sh
-cargo install dioxus-cli --version 0.7.6 --locked
+cargo binstall dioxus-cli@0.7.6 --locked # or use cargo install
 cd crates/bitgateway
 dx bundle --release --platform desktop
 ```

@@ -141,8 +141,15 @@ jobs:
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2
 
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@v1.18.1
+        with:
+          version: "1.18.1"
+
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --version 0.7.6 --locked
+        run: cargo binstall dioxus-cli@0.7.6 --no-confirm --locked
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Bundle desktop app
         working-directory: crates/bitgateway
