@@ -171,11 +171,18 @@ jobs:
         run: |
           $dist = Join-Path "${{ github.workspace }}" "dist"
           $portable = Join-Path "${{ github.workspace }}" "target/dx/bitgateway/bundle/windows/bitgateway.exe"
-          $portableAsset = Join-Path $dist "bitgateway-windows-x86_64-portable.exe"
 
           if (!(Test-Path $portable)) {
             throw "Windows portable executable not found: $portable"
           }
+
+          $installer = Get-ChildItem -Path $dist -Filter "*-setup.exe" -File | Select-Object -First 1
+          if ($null -eq $installer) {
+            throw "Windows installer not found in dist: $dist"
+          }
+
+          $portableName = $installer.Name -replace "-setup\.exe$", "-portable.exe"
+          $portableAsset = Join-Path $dist $portableName
 
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
           Copy-Item -Path $portable -Destination $portableAsset -Force
