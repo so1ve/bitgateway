@@ -33,6 +33,8 @@ Linux 需要额外安装 Dioxus Desktop 依赖：
 ```sh
 sudo apt-get update
 sudo apt-get install -y \
+  pkg-config \
+  libglib2.0-dev \
   libwebkit2gtk-4.1-dev \
   libgtk-3-dev \
   libayatana-appindicator3-dev \
