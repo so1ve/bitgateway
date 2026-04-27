@@ -1,7 +1,15 @@
+[workspace]
+git_release_enable = false
+git_tag_enable = false
+
 [[package]]
 name = "bitgateway"
 semver_check = false
 changelog_include = ["bitgateway-client"]
+git_release_enable = true
+git_release_name = "BITGATEWAY v{{ version }}"
+git_tag_enable = true
+git_tag_name = "bitgateway-v{{ version }}"
 
 [[package]]
 name = "bitgateway-client"
