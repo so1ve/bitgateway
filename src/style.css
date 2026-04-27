@@ -1,7 +1,0 @@
-@import "tailwindcss";
-@plugin "daisyui";
-
-@theme inline {
-	--font-sans: "Geist", "Noto Sans SC", sans-serif;
-	--font-mono: "Geist Mono", monospace;
-}

@@ -1,0 +1,7 @@
+[bundle]
+identifier = "dev.so1ve.bitgateway"
+publisher = "Ray"
+icon = ["assets/icons/icon.ico"]
+
+[bundle.windows]
+icon_path = "assets/icons/icon.ico"

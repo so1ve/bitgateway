@@ -1,9 +1,8 @@
 name: autofix.ci
+
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
   pull_request: {}
 
 permissions:
@@ -12,40 +11,23 @@ permissions:
 jobs:
   autofix:
     runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Install Rust Nightly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
 
-      - name: Rust Cache
+      - name: Cache Cargo
         uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
 
-      - name: Setup PNPM
-        run: corepack enable
+      - name: Format Rust code
+        run: cargo fmt --all
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-          cache: pnpm
-
-      - name: Setup
-        run: npm i -g @antfu/ni
-
-      - name: Install
-        run: ni --no-frozen-lockfile
-
-      - name: Lint and fix
-        run: nr lint:fix
-
-      - name: Run cargo fmt
-        run: cargo fmt --manifest-path src-tauri/Cargo.toml
-
-      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
+      - name: Apply automatic fixes
+        uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
         with:
           commit-message: "chore: apply automatic fixes"

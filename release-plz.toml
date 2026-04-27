@@ -1,0 +1,12 @@
+[workspace]
+release_always = false
+publish_timeout = "10m"
+
+[[package]]
+name = "bitgateway"
+semver_check = false
+changelog_include = ["bitgateway-client"]
+
+[[package]]
+name = "bitgateway-client"
+semver_check = true
