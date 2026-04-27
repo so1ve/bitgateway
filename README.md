@@ -10,6 +10,16 @@
 
 从 [GitHub Releases](../../releases) 下载最新版本。
 
+### 使用 Cargo 安装
+
+如果已经安装 Rust，也可以直接从 crates.io 安装：
+
+```sh
+cargo install bitgateway
+```
+
+Linux 上通过 Cargo 安装时仍需要先安装下方的 Dioxus Desktop 依赖。
+
 ### 从源码编译
 
 准备 Rust nightly（仓库中的 `rust-toolchain.toml` 会自动选择工具链）：

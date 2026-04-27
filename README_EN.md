@@ -10,6 +10,16 @@ A simple desktop app for logging in to and out of the BIT campus network gateway
 
 Download the latest version from [GitHub Releases](../../releases).
 
+### Install with Cargo
+
+If Rust is already installed, you can install the app directly from crates.io:
+
+```sh
+cargo install bitgateway
+```
+
+On Linux, installing with Cargo still requires the Dioxus Desktop dependencies listed below.
+
 ### Build from source
 
 Install Rust nightly. The repository's `rust-toolchain.toml` will automatically select the pinned toolchain:
