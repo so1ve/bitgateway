@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3](https://github.com/so1ve/bitgateway/compare/bitgateway-v0.1.2...bitgateway-v0.1.3) - 2026-04-27
+
+### Added
+
+- make bundling releases work as expected; add portable releases
+
 ## [0.1.2](https://github.com/so1ve/bitgateway/compare/bitgateway-v0.1.1...bitgateway-v0.1.2) - 2026-04-27
 
 ### Other
