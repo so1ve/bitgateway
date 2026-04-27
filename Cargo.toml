@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ray <i@mk1.io>"]
 edition = "2024"
 license = "MIT"
@@ -14,7 +14,7 @@ anyhow = "1"
 auto-launch = "0.6"
 base64 = "0.22"
 bon = "3.9"
-bitgateway-client = { version = "0.1.0", path = "crates/bitgateway-client" }
+bitgateway-client = { version = "0.1.1", path = "crates/bitgateway-client" }
 directories = "6"
 dioxus = { version = "0.7", features = ["desktop"] }
 hmac = "0.12"
