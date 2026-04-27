@@ -39,6 +39,7 @@ sudo apt-get install -y \
   libgtk-3-dev \
   libayatana-appindicator3-dev \
   libxdo-dev \
+  libfuse2 \
   librsvg2-dev \
   patchelf
 ```
@@ -51,13 +52,27 @@ cd bitgateway
 cargo run -p bitgateway
 ```
 
-如果需要生成桌面安装包，建议先安装 `cargo-binstall`，再用它安装 Dioxus CLI 后运行：
+如果需要生成桌面安装包，建议先安装 `cargo-binstall`，再用它安装 Dioxus CLI。Dioxus 0.7 的桌面打包需要显式指定平台和安装包格式，否则 `--out-dir` 可能只创建空目录：
 
 ```sh
 cargo binstall dioxus-cli@0.7.6 --locked # 或者用 cargo install
 cd crates/bitgateway
-dx bundle --release --platform desktop
+
+# Windows：生成 portable exe
+cargo build --release -p bitgateway --locked
+# 产物：target/release/bitgateway.exe
+
+# Windows：生成 NSIS 安装包
+dx bundle --release --platform windows --package-types nsis --locked
+
+# macOS：生成 DMG
+dx bundle --release --platform macos --package-types dmg --locked
+
+# Linux：生成 AppImage
+dx bundle --release --platform linux --package-types appimage --locked
 ```
+
+`Dioxus.toml` 已配置输出目录为仓库根目录的 `dist/`。Windows 安装包不会内置 WebView2 离线运行时，因此体积较小；如果目标系统缺少 WebView2 Runtime，需要先安装它。
 
 更多平台相关说明请参考 [Dioxus 官方文档](https://dioxuslabs.com/)。
 

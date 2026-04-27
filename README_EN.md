@@ -39,6 +39,7 @@ sudo apt-get install -y \
   libgtk-3-dev \
   libayatana-appindicator3-dev \
   libxdo-dev \
+  libfuse2 \
   librsvg2-dev \
   patchelf
 ```
@@ -51,13 +52,27 @@ cd bitgateway
 cargo run -p bitgateway
 ```
 
-To produce a desktop bundle, it's recommended install `cargo-binstall` and use it to install the Dioxus CLI, and run:
+To produce a desktop bundle, it's recommended to install `cargo-binstall` and use it to install the Dioxus CLI. Dioxus 0.7 desktop bundling needs an explicit platform and package type; otherwise `--out-dir` may only create an empty directory:
 
 ```sh
 cargo binstall dioxus-cli@0.7.6 --locked # or use cargo install
 cd crates/bitgateway
-dx bundle --release --platform desktop
+
+# Windows: create a portable exe
+cargo build --release -p bitgateway --locked
+# Output: target/release/bitgateway.exe
+
+# Windows: create an NSIS installer
+dx bundle --release --platform windows --package-types nsis --locked
+
+# macOS: create a DMG
+dx bundle --release --platform macos --package-types dmg --locked
+
+# Linux: create an AppImage
+dx bundle --release --platform linux --package-types appimage --locked
 ```
+
+`Dioxus.toml` is configured to place release bundles in the repository-level `dist/` directory. The Windows installer does not embed the WebView2 offline runtime, keeping the installer small; systems without WebView2 Runtime need to install it first.
 
 For platform-specific details, see the [official Dioxus documentation](https://dioxuslabs.com/).
 

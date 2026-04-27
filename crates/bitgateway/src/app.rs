@@ -7,6 +7,8 @@ use crate::state::SessionPhase;
 use crate::views::{LoginView, SettingsPanel, StatusView};
 use crate::{auth, tray, windowing};
 
+const TAILWIND_CSS: &str = include_str!("../assets/tailwind.css");
+
 #[component]
 pub fn App() -> Element {
     let credentials = use_signal(credentials::load);
@@ -27,7 +29,7 @@ pub fn App() -> Element {
     });
 
     rsx! {
-        Stylesheet { href: asset!("/assets/tailwind.css") }
+        style { {TAILWIND_CSS} }
         main {
             class: "relative flex h-screen w-screen min-w-0 flex-col overflow-hidden bg-[#f5f5f5] font-sans text-[#222]",
             div {
