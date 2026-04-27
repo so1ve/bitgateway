@@ -20,7 +20,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -83,7 +83,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.release-plz-release.outputs.bitgateway_tag }}
 
@@ -164,7 +164,7 @@ jobs:
           Compress-Archive -Path "dist/*" -DestinationPath "bitgateway-${{ matrix.name }}.zip" -Force
 
       - name: Upload bundle to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.release-plz-release.outputs.bitgateway_tag }}
           files: bitgateway-${{ matrix.name }}.zip
