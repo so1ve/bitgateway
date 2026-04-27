@@ -49,18 +49,6 @@ dx bundle --release --platform desktop
 
 更多平台相关说明请参考 [Dioxus 官方文档](https://dioxuslabs.com/)。
 
-## 开发
-
-常用检查命令：
-
-```sh
-cargo fmt --all -- --check
-cargo check --workspace --all-targets
-cargo clippy --workspace --all-targets -- -D warnings
-```
-
-当前项目没有单元测试，CI 不运行测试步骤。
-
 ### 推荐的 IDE 设置
 
 - [VS Code](https://code.visualstudio.com/) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)

@@ -49,18 +49,6 @@ dx bundle --release --platform desktop
 
 For platform-specific details, see the [official Dioxus documentation](https://dioxuslabs.com/).
 
-## Development
-
-Common checks:
-
-```sh
-cargo fmt --all -- --check
-cargo check --workspace --all-targets
-cargo clippy --workspace --all-targets -- -D warnings
-```
-
-The project currently has no unit tests, so CI does not run a test step.
-
 ### Recommended IDE setup
 
 - [VS Code](https://code.visualstudio.com/) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
