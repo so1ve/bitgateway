@@ -1,8 +1,8 @@
-# BITSGUI
+# BITGATEWAY
 
 简体中文 | [English](./README_EN.md)
 
-一个简单的 BIT 校园网（10.0.0.55）登录/登出桌面应用。使用 Tauri、Vue 3 和 TypeScript 构建。
+一个简单的 BIT 校园网（10.0.0.55）登录/登出桌面应用。使用 Dioxus 构建。
 
 ## 下载
 
@@ -12,21 +12,62 @@
 
 ### 从源码编译
 
-请参考 [Tauri 官方文档](https://tauri.app/)。
+准备 Rust nightly（仓库中的 `rust-toolchain.toml` 会自动选择工具链）：
 
-## TODOs
+```sh
+rustup toolchain install nightly
+```
 
-- [ ] MacOS 图标 (`.icns`)
+Linux 需要额外安装 Dioxus Desktop 依赖：
+
+```sh
+sudo apt-get update
+sudo apt-get install -y \
+  libwebkit2gtk-4.1-dev \
+  libgtk-3-dev \
+  libayatana-appindicator3-dev \
+  libxdo-dev \
+  librsvg2-dev \
+  patchelf
+```
+
+克隆仓库并运行：
+
+```sh
+git clone https://github.com/so1ve/bitgateway.git
+cd bitgateway
+cargo run -p bitgateway
+```
+
+如果需要生成桌面安装包，安装 Dioxus CLI 后运行：
+
+```sh
+cargo install dioxus-cli --version 0.7.6 --locked
+cd crates/bitgateway
+dx bundle --release --platform desktop
+```
+
+更多平台相关说明请参考 [Dioxus 官方文档](https://dioxuslabs.com/)。
 
 ## 开发
 
+常用检查命令：
+
+```sh
+cargo fmt --all -- --check
+cargo check --workspace --all-targets
+cargo clippy --workspace --all-targets -- -D warnings
+```
+
+当前项目没有单元测试，CI 不运行测试步骤。
+
 ### 推荐的 IDE 设置
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- [VS Code](https://code.visualstudio.com/) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
 ## 致谢
 
-基于 [bitsrun-lib-rs](https://github.com/so1ve/bitsrun-lib-rs)，这是 [bitsrun-rs](https://github.com/spencerwooo/bitsrun-rs) 的一个分支，为了更好地作为一个库被使用。
+参考 [bitsrun-rs](https://github.com/spencerwooo/bitsrun-rs) 实现了 `bitgateway-client`。
 
 ## License
 
