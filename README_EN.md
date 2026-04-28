@@ -10,6 +10,8 @@ A simple desktop app for logging in to and out of the BIT campus network gateway
 
 Download the latest version from [GitHub Releases](../../releases).
 
+On startup, the app checks the latest GitHub Release. If a newer version is available, it prompts you to open the download page; it will not download or install updates automatically.
+
 ### Install with Cargo
 
 If Rust is already installed, you can install the app directly from crates.io:

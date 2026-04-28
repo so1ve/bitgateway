@@ -221,6 +221,8 @@ dependencies = [
  "bitgateway-client",
  "dioxus",
  "directories",
+ "reqwest",
+ "semver",
  "serde",
  "serde_json",
  "single-instance",

@@ -1,11 +1,12 @@
 use dioxus::prelude::*;
 
 use crate::auth::SessionState;
-use crate::components::{AppFooter, Toast, use_provide_toast};
+use crate::components::{AppFooter, Toast, UpdatePrompt, use_provide_toast};
 use crate::config::{credentials, settings};
 use crate::state::SessionPhase;
+use crate::update::UpdateInfo;
 use crate::views::{LoginView, SettingsPanel, StatusView};
-use crate::{auth, tray, windowing};
+use crate::{auth, tray, update, windowing};
 
 const TAILWIND_CSS: &str = include_str!("../assets/tailwind.css");
 
@@ -19,6 +20,7 @@ pub fn App() -> Element {
     let session_state = SessionState::new(phase, online, manual_logout);
     let toast = use_provide_toast();
     let mut settings_open = use_signal(|| false);
+    let mut update_info = use_signal(|| None::<UpdateInfo>);
     let version = env!("CARGO_PKG_VERSION");
 
     tray::use_tray();
@@ -26,6 +28,12 @@ pub fn App() -> Element {
 
     use_future(move || async move {
         auth::run_status_loop(credentials, session_state, toast).await;
+    });
+
+    use_future(move || async move {
+        if let Ok(Some(info)) = update::check_for_update().await {
+            update_info.set(Some(info));
+        }
     });
 
     rsx! {
@@ -58,6 +66,13 @@ pub fn App() -> Element {
             AppFooter { version }
 
             Toast {}
+
+            if let Some(info) = update_info() {
+                UpdatePrompt {
+                    info,
+                    on_dismiss: move |_| update_info.set(None),
+                }
+            }
 
             if settings_open() {
                 SettingsPanel {

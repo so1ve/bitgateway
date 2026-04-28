@@ -8,6 +8,7 @@ mod config;
 mod network;
 mod state;
 mod tray;
+mod update;
 mod utils;
 mod views;
 mod windowing;

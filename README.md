@@ -10,6 +10,8 @@
 
 从 [GitHub Releases](../../releases) 下载最新版本。
 
+应用启动时会检查最新 GitHub Release；如果发现新版本，会提示你打开下载页面，不会自动下载或安装。
+
 ### 使用 Cargo 安装
 
 如果已经安装 Rust，也可以直接从 crates.io 安装：
