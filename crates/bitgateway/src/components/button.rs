@@ -15,10 +15,10 @@ pub fn AppButton(
 ) -> Element {
     let class = match variant {
         ButtonVariant::Primary => {
-            "w-full cursor-pointer border border-[#333] bg-[#333] px-3 py-2.5 font-medium text-white transition-colors duration-100 hover:border-[#444] hover:bg-[#444] disabled:cursor-not-allowed disabled:opacity-55 rounded-[2px]"
+            "w-full cursor-pointer border border-[#333] bg-[#333] px-3 py-2 font-medium text-white transition-colors duration-100 hover:border-[#444] hover:bg-[#444] disabled:cursor-not-allowed disabled:opacity-55 rounded-[2px]"
         }
         ButtonVariant::DangerSecondary => {
-            "mt-auto w-full cursor-pointer border border-[#bbb] bg-transparent px-3 py-2.5 font-medium text-[#333] transition-colors duration-100 hover:border-[#b9a0a0] hover:bg-[#f4eeee] hover:text-[#6f2222] disabled:cursor-not-allowed disabled:opacity-55 rounded-[2px]"
+            "mt-auto w-full cursor-pointer border border-[#bbb] bg-transparent px-3 py-2 font-medium text-[#333] transition-colors duration-100 hover:border-[#b9a0a0] hover:bg-[#f4eeee] hover:text-[#6f2222] disabled:cursor-not-allowed disabled:opacity-55 rounded-[2px]"
         }
     };
 

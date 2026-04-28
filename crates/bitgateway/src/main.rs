@@ -20,8 +20,8 @@ use dioxus::desktop::tao::window::{Icon, WindowBuilder};
 use dioxus::desktop::{Config, WindowCloseBehaviour, icon_from_memory};
 use single_instance::SingleInstance;
 
-const WINDOW_WIDTH: f64 = 320.0;
-const WINDOW_HEIGHT: f64 = 420.0;
+const WINDOW_WIDTH: f64 = 280.0;
+const WINDOW_HEIGHT: f64 = 380.0;
 const APP_ICON: &[u8] = include_bytes!("../assets/icons/icon.png");
 
 #[cfg(target_os = "macos")]

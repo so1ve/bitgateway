@@ -41,7 +41,7 @@ pub fn App() -> Element {
         main {
             class: "relative flex h-screen w-screen min-w-0 flex-col overflow-hidden bg-[#f5f5f5] font-sans text-[#222]",
             div {
-                class: "min-h-0 flex-1 px-[18px] pb-11 pt-5",
+                class: "min-h-0 flex-1 px-[18px] pb-11 pt-2",
                 {
                     match phase() {
                         SessionPhase::Online | SessionPhase::LoggingOut => rsx! {
