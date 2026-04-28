@@ -214,7 +214,7 @@ dependencies = [
 
 [[package]]
 name = "bitgateway"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "auto-launch",
@@ -231,7 +231,7 @@ dependencies = [
 
 [[package]]
 name = "bitgateway-client"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "base64",
