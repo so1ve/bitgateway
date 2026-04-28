@@ -65,14 +65,22 @@ cargo build --release -p bitgateway --locked
 # Windows：生成 NSIS 安装包
 dx bundle --release --platform windows --package-types nsis --locked
 
-# macOS：生成 DMG
-dx bundle --release --platform macos --package-types dmg --locked
+# macOS：生成 DMG 和 .app.tar.gz
+dx bundle --release --platform macos \
+  --package-types macos \
+  --package-types dmg \
+  --package-types updater \
+  --locked
 
-# Linux：生成 AppImage
-dx bundle --release --platform linux --package-types appimage --locked
+# Linux：生成 AppImage、deb 和 rpm
+dx bundle --release --platform linux \
+  --package-types appimage \
+  --package-types deb \
+  --package-types rpm \
+  --locked
 ```
 
-`Dioxus.toml` 已配置输出目录为仓库根目录的 `dist/`。Windows 安装包不会内置 WebView2 离线运行时，因此体积较小；如果目标系统缺少 WebView2 Runtime，需要先安装它。
+`Dioxus.toml` 已配置输出目录为仓库根目录的 `dist/`。Dioxus 的 `updater` package type 会为 macOS `.app` 生成 `.app.tar.gz`。Windows 安装包不会内置 WebView2 离线运行时，因此体积较小；如果目标系统缺少 WebView2 Runtime，需要先安装它。
 
 更多平台相关说明请参考 [Dioxus 官方文档](https://dioxuslabs.com/)。
 

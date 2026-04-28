@@ -107,15 +107,31 @@ jobs:
           - name: linux-x86_64
             os: ubuntu-22.04
             platform: linux
-            package_type: appimage
+            package_types: >-
+              --package-types appimage
+              --package-types deb
+              --package-types rpm
+            asset_globs: |
+              dist/*.AppImage
+              dist/*.deb
+              dist/*.rpm
           - name: macos
             os: macos-latest
             platform: macos
-            package_type: dmg
+            package_types: >-
+              --package-types macos
+              --package-types dmg
+              --package-types updater
+            asset_globs: |
+              dist/*.dmg
+              dist/*.app.tar.gz
           - name: windows-x86_64
             os: windows-latest
             platform: windows
-            package_type: nsis
+            package_types: --package-types nsis
+            asset_globs: |
+              dist/*-setup.exe
+              dist/*-portable.exe
 
     steps:
       - name: Checkout
@@ -163,7 +179,7 @@ jobs:
 
       - name: Bundle desktop app
         working-directory: crates/bitgateway
-        run: dx bundle --release --platform ${{ matrix.platform }} --package-types ${{ matrix.package_type }} --locked
+        run: dx bundle --release --platform ${{ matrix.platform }} ${{ matrix.package_types }} --locked
 
       - name: Add Windows portable app
         if: runner.os == 'Windows'
@@ -207,7 +223,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.release-plz-release.outputs.bitgateway_tag }}
-          files: dist/*
+          files: ${{ matrix.asset_globs }}
           fail_on_unmatched_files: true
           overwrite_files: true
         env:

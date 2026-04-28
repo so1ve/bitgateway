@@ -65,14 +65,22 @@ cargo build --release -p bitgateway --locked
 # Windows: create an NSIS installer
 dx bundle --release --platform windows --package-types nsis --locked
 
-# macOS: create a DMG
-dx bundle --release --platform macos --package-types dmg --locked
+# macOS: create a DMG and .app.tar.gz
+dx bundle --release --platform macos \
+  --package-types macos \
+  --package-types dmg \
+  --package-types updater \
+  --locked
 
-# Linux: create an AppImage
-dx bundle --release --platform linux --package-types appimage --locked
+# Linux: create AppImage, deb, and rpm packages
+dx bundle --release --platform linux \
+  --package-types appimage \
+  --package-types deb \
+  --package-types rpm \
+  --locked
 ```
 
-`Dioxus.toml` is configured to place release bundles in the repository-level `dist/` directory. The Windows installer does not embed the WebView2 offline runtime, keeping the installer small; systems without WebView2 Runtime need to install it first.
+`Dioxus.toml` is configured to place release bundles in the repository-level `dist/` directory. Dioxus' `updater` package type creates the macOS `.app.tar.gz` archive from the `.app` bundle. The Windows installer does not embed the WebView2 offline runtime, keeping the installer small; systems without WebView2 Runtime need to install it first.
 
 For platform-specific details, see the [official Dioxus documentation](https://dioxuslabs.com/).
 
