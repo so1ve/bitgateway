@@ -30,8 +30,7 @@ const SINGLE_INSTANCE_NAME: &str = "/tmp/io.mk1.bitgateway.lock";
 const SINGLE_INSTANCE_NAME: &str = "io.mk1.bitgateway";
 
 fn main() {
-    let instance =
-        SingleInstance::new(SINGLE_INSTANCE_NAME).expect("failed to create single-instance guard");
+    let instance = SingleInstance::new(SINGLE_INSTANCE_NAME).unwrap();
     if !instance.is_single() {
         return;
     }
